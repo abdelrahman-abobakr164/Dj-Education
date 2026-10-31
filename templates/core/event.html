@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load math_filter %}
+
+{% block body %}
+	<div class="top_header_banner">	
+		<!-- START SECTION TOP -->
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{event.name}}</h1>
+						<ul>
+							<li><a href="{% url 'index' %}">Home</a></li>
+							<li> / {{event.name|truncatewords:3}}</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+		<!-- END SECTION TOP -->
+		</div><!-- END  TOP HEADER CLASS -->
+
+		<!-- START EVENT -->
+		<section class="our_event section-padding">
+			<div class="container">
+				<div class="row">	
+					<div class="col-md-8 col-sm-8 col-xs-12">
+						<div class="single_event_single">
+							<img alt="" class="img-responsive" src="{{event.img.url}}"/>
+							<div class="single_event_text_single">
+								 <h4>{{event.name}}</h4>
+								 <span><i class="fa fa-calendar"></i>{{event.starts_on|date:'d M o'}}</span>
+								 <span><i class="fa fa-clock-o"></i>{{event.starts_at}}-{{event.ends_at}}</span>
+								 <span><i class="fa fa-location-dot"></i><strong>{{event.location}}</strong></span>
+								<p>{{event.overview}}</p>
+							</div>
+							<div class="single_event_text_single_description">
+								<h3>Event Descriptions</h3>
+								<p>{{event.description}} </p>
+							 </div>
+						</div><!--- END SINGLE EVENT -->
+                        <div class="course-details-content section-bg">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a href="#speakers" class="nav-link active" data-bs-toggle="tab">speakers</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane show fade active" id="speakers">
+                                    <div class="overview text-center">
+										<div class="row">
+											{% for speaker in event.speakers.all %}
+											<div class="col-4 mb-5">
+												<div class="instructor-item">
+													<div class="instructor-thumb">
+														<a href="{% url 'profile' speaker.slug %}"><img src="{{speaker.img.url}}" alt="instructor"></a>
+													</div>
+													<div class="instructor-content">
+														<h6 class="title"><a href="{% url 'profile' speaker.slug %}">{{speaker.get_fullname}}</a></h6>
+														<span class="details">{{speaker.job_title}}</span>
+													</div>
+												</div>
+												<p>{{speaker.description}}</p>
+											</div>
+											{% endfor %}
+										</div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>	
+					</div><!--- END COL -->
+					<div class="col-md-4 col-sm-4 col-xs-12">
+						<div class="event_info">
+							<h3>Buy Ticket</h3>
+							<ul>
+								<li>
+									<i class="fa fa-calendar-day"></i>
+									<h4>Starts On</h4>
+									<p>{{event.starts_on}}</p>
+								</li>
+								<li>
+									<i class="fa fa-chair"></i>
+									<h4>Available Seats</h4>
+									<p>{{event.max_seats|minus:event.audience.all.count}}</p>	
+								</li>
+								<li>
+									<i class="fa fa-chair"></i>
+									<h4>Total Seats</h4>
+									<p>{{event.max_seats}}</p>
+								</li>
+								<li>
+									<i class="fa fa-money-check-dollar"></i>
+									<h4>Ticket price</h4>
+									<p>${{event.price}}</p>
+								</li>
+								<li>
+									<i class="fa fa-phone"></i>
+									<h4>Contact for details</h4>
+									<p>{{event.phone}}</p>
+								</li>
+								<li>
+									<i class="fa fa-map"></i>
+									<h4>Event Venue</h4>
+									<p>{{event.location}}</p>
+								</li>
+							</ul>
+							<div class="event_info_register">
+								<a class="btn_one" href="course.html">Register For book</a>
+							</div>
+						</div>
+						
+					</div><!--- END COL -->
+				</div><!-- END ROW -->
+			</div><!-- END CONTAINER -->
+		</section>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block body %}
+	<div class="top_header_banner">	
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>Blogs</h1>
+						<ul>
+							<li><a href="{% url 'index' %}">Home</a></li>
+							<li> / Blogs</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+	</div>
+	
+	<!-- START BLOG -->
+	<section class="blog_area_bg section-padding">
+		<div class="container">
+			<div class="row">		
+				{% for blog in blogs %}
+					<div class="col-lg-4 col-sm-4 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+						<div class="single_blog">
+							<img src="{{blog.img.url}}" class="img-fluid" alt="image" />
+							<div class="img_info">
+								<span>{{blog.published|date:'M d o'}} | <a href="{% url 'blog' blog.slug %}">{{blog.tags.first}}</a></span>
+							</div>
+							<div class="content_box">
+								<h2><a href="{% url 'blog' blog.slug %}">{{blog.title}}</a></h2>
+								<a href="{% url 'blog' blog.slug %}" target='_blank' class="cta"><span>Read More</span>
+								<svg width="13px" height="10px" viewBox="0 0 13 10">
+									<path d="M1,5 L11,5"></path>
+									<polyline points="8 1 12 5 8 9"></polyline>
+								</svg>
+								</a>								
+							</div>
+						</div>
+					</div><!-- END COL-->				
+				{% endfor %}
+			</div><!-- / END ROW -->
+		</div><!-- END CONTAINER  -->
+	</section>	
+{% endblock body %}

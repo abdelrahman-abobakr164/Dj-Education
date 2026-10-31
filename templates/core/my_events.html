@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<section class="our-event section-padding">
+		<div class="container">				
+			<div class="row">	
+				{% for event in events %}
+					<div class="col-lg-4 col-sm-6 col-xs-12">
+						<div class="event-slide">
+							<div class="event-img">
+								<img src="{{event.img.url}}" alt="">
+								<div class="event-date">
+									<span class="date">{{event.starts_on|date:'d'}}</span>
+									<span class="month">{{event.starts_on|date:'M'}}</span>
+								</div>
+							</div>
+							<div class="event-content">
+								<h3><a href="{% url 'event' event.slug %}">{{event.name}}</a></h3>
+								<span><i class="fa fa-clock-o"></i>{{event.starts_at}} - {{event.ends_at}}</span>
+								<span><i class="fa fa-location-dot"></i><strong>{{event.location}}</strong></span>
+								<p>{{event.overview|truncatewords:30}}</p>
+							</div>
+						</div><!-- END EVENT -->
+					</div><!-- END COL -->		
+                    {% empty %}
+                    <h1 class="text-center mt-5 mb-5 text-primary">You are not Involved in any Event Yet. </h1>
+				{% endfor %}
+			</div><!-- END ROW -->
+		</div><!-- END CONTAINER -->			
+	</section>
+{% endblock body %}

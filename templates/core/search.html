@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load math_filter %}
+{% block style %}
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome.min.css' %}">
+{% endblock style %}
+
+
+{% block body %}
+	<div class="top_header_banner2">
+		<section class="home_bg hb_height">
+			<div class="container">
+				<div class="row">
+				  <div class="col-lg-6 col-sm-12 col-xs-12">
+					<div class="hero-text-img2">
+						<img src="{% static 'assets/images/all-img/home-img1.png' %}" class="img-fluid" alt="" />
+					</div>					
+				  </div><!--- END COL -->					  
+				  <div class="col-lg-6 col-sm-12 col-xs-12">
+					<div class="hero-text2 ht_top">
+						<h1>Explore Our <span>{{courses.count}}+</span> Online/Offline Courses for all</h1>
+					</div>	
+					<div class="home_sb2">
+						<form  action="{% url 'search' %}" class="banner_subs2">
+							<input type="search" class="form-control home_si2" name='q' placeholder="Search your course here" required="required">
+							<button type="submit" class="subscribe__btn">Search <i class="fa fa-paper-plane-o"></i></button>
+						</form>
+					</div>	
+					<div class="home_tag">
+						<span>Popular Topic:</span>
+						{% for cat in categories|slice:4 %}
+							<a href="{% url 'category_slug' cat.slug %}">{{cat.name}}, </a>
+						{% endfor %}
+					</div>					
+				  </div><!--- END COL -->					  
+				</div><!--- END ROW -->
+			</div><!--- END CONTAINER -->
+		</section>
+	</div>
+		
+    <section class="category_two_area section-padding">
+        <div class="container">									
+            <div class="section-title text-center">
+                {% if request.GET.q %}
+                    <h1>Search Result <b>"{{request.GET.q}}"</b></h1>
+                {% else %} 
+                    <h1>Topic <b>"{{category_slug}}"</b></h1>
+                {% endif %}
+            </div>						
+        </div>
+    </section>
+
+    {% if courses %}
+        <div class="bc_bg_two section-padding">
+            <div class="container">
+                <div class="section-title">
+                    <h1>Courses</h1>
+                </div>	
+                <div class="row">			
+                    {% for course in courses %}
+                        <div class="col-lg-6 col-sm-12 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+                            <div class="course-slide2">
+                                <div class="course-img2">
+                                    <img src="{{course.img.url}}" alt="">
+                                    <div class="course-date2">
+                                        <span class="month2">${{ course.price }}</span>
+                                    </div>
+                                </div>
+                                <div class="course-content2"><a class="c_btn2" href="{% url 'course' course.slug %}">{{course.categories.first|slice:1}}</a>
+                                    <h3><a href="{% url 'course' course.slug %}">{{course.name}}</a></h3>
+                                    <div class="co_list">
+                                        <span><i class="fa fa-calendar"></i>{{course.lessons}} Lessons</span>
+                                        {% for i in course.reviews.all %}
+                                            <span><i class="fa fa-star"></i>{{i.rating}}</span>
+                                        {% endfor %}
+                                        {% if course.course_type == 'online' %}
+                                            <span><i class="fa fa-clock"></i>{{course.course_hours}}h</span>
+                                            <span><i style='color:green' class="fa fa-dot-circle"></i>Online</span>
+                                        {% else %}
+                                            <span><i style='color:gray' class="fa fa-dot-circle"></i>Offline</span>
+                                        {% endif %}
+                                        {% if course.course_type == 'offline' %}
+                                            <span><i class="fa fa-chair"></i><strong>{{course.max_seats|minus:course.students.all.count}} Seats Available</strong></span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div><!--END COURSE SLIDE -->	
+                        </div>	
+                    {% endfor %}
+                </div>	
+            </div>
+        </div>
+    {% endif %}
+
+    {% if blogs %}
+        <!-- START BLOG -->
+        <section id="blog" class="blog_area section-padding">
+            <div class="container">
+                <div class="section-title">
+                    <h1>Blogs</h1>
+                </div>	
+                <div class="row">
+                    {% for blog in blogs %}
+                        <div class="col-lg-4 col-sm-4 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+                            <div class="single_blog">
+                                <img src="{{blog.img.url}}" class="img-fluid" alt="image" />
+                                <div class="img_info">
+                                    <span>{{blog.published|date:'M d, o'}} | <a href="{% url 'blog' blog.slug %}                    ">{{blog.tags.first}}</a></span>
+                                </div>
+                                <div class="content_box">
+                                    <h2><a href="{% url 'blog' blog.slug %}">{{blog.title}}/a></h2>
+                                    <a href="#" class="cta"><span>Read More</span>
+                                    <svg width="13px" height="10px" viewBox="0 0 13 10">
+                                        <path d="M1,5 L11,5"></path>
+                                        <polyline points="8 1 12 5 8 9"></polyline>
+                                    </svg>
+                                    </a>								
+                                </div>
+                            </div>
+                        </div><!-- END COL-->				
+                    {% endfor %}
+                </div><!-- / END ROW -->
+            </div><!-- END CONTAINER  -->
+        </section>	
+        <!-- END BLOG -->		
+    {% endif %}
+    
+    {% if events %}
+        <section class="our-event section-padding">
+            <div class="container">				
+                <div class="row">	
+                    {% for event in events %}
+                        <div class="col-lg-4 col-sm-6 col-xs-12">
+                            <div class="event-slide">
+                                <div class="event-img">
+                                    <img src="{{event.img.url}}" alt="">
+                                    <div class="event-date">
+                                        <span class="date">{{event.starts_on|date:'d'}}</span>
+                                        <span class="month">{{event.starts_on|date:'M'}}</span>
+                                    </div>
+                                </div>
+                                <div class="event-content">
+                                    <h3><a href="{% url 'event' event.slug %}">{{event.name}}</a></h3>
+                                    <span><i class="fa fa-clock-o"></i>{{event.starts_at}} - {{event.ends_at}}</span>
+                                    <span><i class="fa fa-location-dot"></i><strong>{{event.location}}</strong></span>
+                                    <p>{{event.overview|truncatewords:30}}</p>
+                                </div>
+                            </div><!-- END EVENT -->
+                        </div><!-- END COL -->		
+                    {% endfor %}
+                </div><!-- END ROW -->
+            </div><!-- END CONTAINER -->			
+        </section>
+    {% endif %}
+        
+{% endblock body %}	

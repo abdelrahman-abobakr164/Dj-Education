@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+    <style>
+        /****** Rating Starts *****/
+        @import url(http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+        fieldset, label { margin: 0; padding: 0; }
+        body{ margin: 20px; }
+        h1 { font-size: 1.5em; margin: 10px; }
+
+        .rating {
+            border: none;
+            float: left;
+        }
+
+        .rating > input { display: none; }
+        .rating > label:before {
+            margin: 5px;
+            font-size: 1.25em;
+            font-family: FontAwesome;
+            display: inline-block;
+            content: "\f005";
+        }
+
+        .rating > .half:before {
+            content: "\f089";
+            position: absolute;
+        }
+
+        .rating > label {
+            color: #ddd;
+        }
+
+        .rating > input:checked ~ label,
+        .rating:not(:checked) > label:hover,
+        .rating:not(:checked) > label:hover ~ label { color: #FFD700;  }
+
+        .rating > input:checked + label:hover,
+        .rating > input:checked ~ label:hover,
+        .rating > label:hover ~ input:checked ~ label,
+        .rating > input:checked ~ label:hover ~ label { color: #FFED85;  }
+
+        .rating > label{float:right}
+    </style>
+
+	<div class="top_header_banner">	
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{course.name}}</h1>
+						<ul>
+							<li><a href="{% url 'courses' %}">Home</a></li>
+							<li> / {{course.name|truncatewords:3}}</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+		<!-- END SECTION TOP -->
+    </div><!-- END  TOP HEADER CLASS -->
+
+		<!-- START EVENT -->
+		<section class="our_event section-padding">
+			<div class="container">
+				<div class="row">	
+					<div class="col-lg-8 col-sm-8 col-xs-12">
+						<div class="single_event_single">
+							<img alt="" class="img-fluid" src="{{course.img.url}}"/>
+							<div class="single_event_text_single">
+								 <h4>{{ course.name }}</h4>
+                                 {% if course.course_type == 'offline' %}
+                                    <span><i class="fa fa-location-dot"></i>{{course.location}}</span>
+                                {% endif %}
+								 <p>{{course.overview}}</p>
+							</div>
+						</div><!--- END SINGLE EVENT -->
+                        <div class="course-details-content section-bg">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a href="#overview" class="nav-link active" data-bs-toggle="tab">Overview</a>
+                                </li>
+                                <li>
+                                    <a href="#course" class="nav-link" data-bs-toggle="tab">Course </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#instructor" class="nav-link" data-bs-toggle="tab">instructor</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#reviews" class="nav-link" data-bs-toggle="tab">reviews</a>
+                                </li>   
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane show fade active" id="overview">
+                                    <div class="overview">
+                                        <p> {{course.description_requirements}} </p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" role="tabpanel" id="course">
+                                    <div class="overview">
+                                        {% if request.user not in course.students.all %}
+                                            <video src=""><source src="" type="">Brief Video</video>
+                                            <div class="details-buttons-area">
+                                                <a href="#0" class="custom-button theme-one">Enroll Now <i class="fa fa-angle-right"></i></a>
+                                                <a href="#0" class="custom-button bg-white">get membership</a>
+                                            </div>
+                                        {% else %} 
+                                            {% comment %} {% for vid in course.videos.all %} {% endcomment %}
+                                                {% comment %} <video src=""><source src="{{vid.url}}" type="">Video</video> {% endcomment %}
+                                            {% comment %} {% endfor %} {% endcomment %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="instructor">
+                                    <div class="overview text-center">
+                                        <div class="instructor-item">
+                                            <div class="instructor-thumb">
+                                                <a href="{% url 'profile' course.instructor.slug %}"><img src="{{course.instructor.img.url}}" alt="instructor"></a>
+                                            </div>
+                                            <div class="instructor-content">
+                                                <h6 class="title"><a href="{% url 'profile' course.instructor.slug %}">{{course.instructor.get_fullname}}</a></h6>
+                                                <span class="details">{{course.instructor.job_title}}</span>
+                                            </div>
+                                        </div>
+                                        <p>{{course.instructor.description}}</p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="reviews">
+                                    <div class="client-review">
+                                        <div class="review-comments">
+                                            <h6 class="review-title">Reviews ({{reviews.count}})</h6>
+                                            <ul class="review-contents">
+                                                {% for review in reviews %}
+                                                    <li>
+                                                        <div class="thumb">
+                                                            <img src="{{review.user.img.url}}" alt="course">
+                                                        </div>
+                                                        <div class="cont">
+                                                            <h6 class="subtitle">{{review.user.name}}</h6>
+                                                            <div class="ratings cl-theme">
+                                                                {% for i in reviews %}
+                                                                    {% for stars in '12345' %}
+                                                                        {% if i.rating >= forloop.counter %}
+                                                                            <span><i class="fa fa-star"></i></span>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <p>{{review.message}}</p>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div><br><br>
+                                        <div class="review-form">
+                                            <h6 class="review-title">Add a Review</h6>
+                                            <form method='POST' action='{% url "review" course.slug course.id %}' class="row client-form align-items-center">
+                                                {% csrf_token %}
+                                                <div class="col-md-4 col-12">
+                                                    <div class="rating">
+                                                        <span class="rating-title">Your Rating : </span>
+                                                        <div class="d-flex">
+                                                            <fieldset class="rating">
+                                                                <input type="radio" id="star5" name="rating" value="5" />
+                                                                <label for="star5" title="Awesome - 5 stars"></label>
+                                                                <input type="radio" id="star4" name="rating" value="4" />
+                                                                <label for="star4" title="Pretty good - 4 stars"></label>
+                                                                <input type="radio" id="star3" name="rating" value="3" />
+                                                                <label for="star3" title="Meh - 3 stars"></label>
+                                                                <input type="radio" id="star2" name="rating" value="2" />
+                                                                <label for="star2" title="Kinda bad - 2 stars"></label>
+                                                                <input type="radio" id="star1" name="rating" value="1" />
+                                                                <label for="star1" title="Sucks big time - 1 star"></label>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 col-12 d-inline-flex">
+                                                    <textarea rows="5" name='message' placeholder="Type Here Message"></textarea>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="custom-button rounded">Submit Review</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>						
+					</div><!--- END COL -->
+					<div class="col-lg-4 col-sm-4 col-xs-12">
+						<div class="course_features">
+							<h3>Course features</h3>
+							<ul>
+                                {% if course.course_type == 'offline' %}
+                                    <li><i class="fa fa-calendar-day"></i> From <b>{{course.starts_on|date:'d M'}}</b></li>
+                                    <li><i class="fa fa-calendar-day"></i> To <b>{{course.ends_on|date:'d M'}}</b></li>
+                                    <li><i class="fa fa-calendar-alt"></i> Course duration <b>{{course.duration}} days</b></li>
+                                {% else %}
+                                    <li><i class="fa fa-clock"></i> Course Hourse <b>{{course.course_hours}} Hours</b></li>
+                                {% endif %}
+								<li><i class="fa fa-book-open"></i> Total {% if course.course_type == 'offline' %} Lectures {% else %} Lessons {% endif %} <b>{{ course.lessons }}</b></li>
+								<li><i class="fa fa-user"></i> Total Students <b>{{course.students.count}}</b></li>
+                                {% if course.course_type == 'offline' %}
+    								<li><i class="fa fa-chair"></i> Available Seats <b>{{available_seats}}</b></li>
+                                {% endif %}
+							</ul>
+						</div>
+                        
+                        {% if request.user not in course.students.all %}
+                            <div class="event_info_price">
+                                <a href="{% url 'checkout' %}"><h4>Purchase - {{course.price}}$</h4></a>
+                            </div>
+                        {% endif %}
+                        <hr>
+                        {% if request.user.is_anonymous %}
+                            <div class="event_info_register">
+                                <a class="btn_one" href="{% url 'account_signup' %}">Signup Today</a>
+                            </div>
+                        {% endif %}
+
+                        {% if related_courses %}
+                            <div class="related_course">
+                                <h3>Related Course</h3>
+                                {% for cour in related_courses %}
+                                    <div class="single_rc">
+                                        <div class="rc_img">
+                                            <img style='max-width:150px; max-height:100px' src="{{cour.img.url}}" alt="" />
+                                        </div>
+                                        {% for i in cour.reviews.all %}
+                                            {% for stars in '12345' %}
+                                                {% if i.rating >= forloop.counter %}
+                                                    <span><i class="fa fa-star"></i></span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        <h4><a href="{% url 'course' cour.slug %}">{{cour.name|truncatewords:4}}</a></h4>
+                                        <span>${{cour.price}}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}                            
+
+						<div class="sidebar-post mt-4">
+							<div class="sidebar_title"><h4>CATEGORIES</h4></div>
+							<div class="single_category">
+								<ul>
+                                    {% for cat in course.categories.all %}
+                                    <li><a href="{% url 'category_slug' cat.slug %}">{{cat.name}} <sup>{{cat.categories.count}}</sup></a></li>
+                                    {% endfor %}
+								</ul>
+							</div><!-- END SOCIAL MEDIA POST -->
+						</div><!-- END SIDEBAR POST -->		
+                        
+                        {% if user.facebook or user.Linkedin or user.youtube or user.twitter %}
+                            <div class="sidebar-post">
+                                <div class="sidebar_title"><h4>Follow Me</h4></div>
+                                <div class="single_social">
+                                    <ul>
+                                        {% if user.facebook %}
+                                            <li><div class="social_item b_facebook"><a href="{{user.facebook}}" title="facebook"><i class="fa-brands fa-facebook"></i><span class="item-list">Facebook</span></a></div></li>
+                                        {% endif %}
+                                        {% if user.twitter %}
+                                            <li><div class="social_item b_twitter"><a href="{{user.twitter}}" title="twitter"><i class="fa-brands fa-twitter"></i><span class="item-list">Twitter</span></a></div></li>
+                                        {% endif %}
+                                        {% if user.youtube %}
+                                            <li><div class="social_item b_youtube"><a href="{{user.youtube}}" title="youtube"><i class="fa-brands fa-youtube"></i><span class="item-list">Youtube</span></a></div></li>
+                                        {% endif %}
+                                        {% if user.linkedin %}
+                                            <li><div class="social_item b_linkedin"><a href="{{user.Linkedin}}" title="Linkedin"><i class="fa-brands fa-linkedin-in"></i><span class="item-list">Linkedin</span></a></div></li>
+                                        {% endif %}
+                                    </ul>
+                                </div><!-- END SOCIAL MEDIA POST -->
+                            </div><!-- END SIDEBAR POST -->					
+                        {% endif %}
+					</div><!--- END COL -->
+				</div><!-- END ROW -->
+			</div><!-- END CONTAINER -->
+		</section>
+		<!-- END EVENT -->
+{% endblock %}

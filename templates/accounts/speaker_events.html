@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<div class="top_header_banner">				
+		<!-- START SECTION TOP -->
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{user.get_fullname}}'s Events</h1>
+						<ul>
+							<li><a href="{% url 'profile' user.slug %}">Profile</a></li>
+							<li> / Events</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+		<!-- END SECTION TOP -->
+	</div><!-- END  TOP HEADER CLASS -->
+
+	<section class="our-event section-padding">
+		<div class="container">				
+			<div class="row">	
+				{% for event in events %}
+					<div class="col-lg-4 col-sm-6 col-xs-12">
+						<div class="event-slide">
+							<div class="event-img">
+								<img src="{{event.img.url}}" alt="">
+								<div class="event-date">
+									<span class="date">{{event.starts_on|date:'d'}}</span>
+									<span class="month">{{event.starts_on|date:'M'}}</span>
+								</div>
+							</div>
+							<div class="event-content">
+								<h3><a href="{% url 'event' event.slug %}">{{event.name}}</a></h3>
+								<span><i class="fa fa-clock-o"></i>{{event.starts_at}} - {{event.ends_at}}</span>
+								<span><i class="fa fa-location-dot"></i><strong>{{event.location}}</strong></span>
+								<p>{{event.overview|truncatewords:30}}</p>
+							</div>
+						</div><!-- END EVENT -->
+					</div><!-- END COL -->		
+				{% endfor %}
+				<div class="col-lg-12 text-center">
+					<div class="cc_btn">
+						<a href="{% url 'speaker-events' user.slug %}" class="cta"><span>View All Events</span>
+						  <svg width="13px" height="10px" viewBox="0 0 13 10">
+							<path d="M1,5 L11,5"></path>
+							<polyline points="8 1 12 5 8 9"></polyline>
+						  </svg>
+						</a>
+					</div>
+				</div><!--END COL -->
+			</div><!-- END ROW -->
+		</div><!-- END CONTAINER -->			
+	</section>
+{% endblock body %}

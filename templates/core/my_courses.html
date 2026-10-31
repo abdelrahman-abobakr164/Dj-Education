@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href="{% static 'assets/css/shop.css' %}" />
+{% endblock style %}
+
+{% block body %}
+	<div class="shopping-cart section">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<table class="table shopping-summery">
+						<thead>
+							<tr class="main-hading">
+								<th>COURSE</th>
+								<th>NAME</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for cour in courses %}
+								<tr>
+									<td class="image" data-title="No"><img src="{{cour.img.url}}" alt="#"></td>
+									<td class="product-des" data-title="Description">
+										<p class="product-name"><a href="{% url 'course' cour.slug %}">{{cour.name}}</a></p>
+										<p class="product-des">{{cour.overview|truncatewords:17}}</p>
+									</td>
+									<td></td>
+									<td ></td>
+									<td>
+										<div class="col-lg-12 text-center">
+											<div class="cc_btn">
+												<a href="{% url 'course' cour.slug %}" class="cvi"><span>View Course</span>
+												<svg width="13px" height="10px" viewBox="0 0 13 10">
+													<path d="M1,5 L11,5"></path>
+													<polyline points="8 1 12 5 8 9"></polyline>
+												</svg>
+												</a>
+											</div>
+										</div><!--END COL -->	
+									</td>
+								</tr>
+								{% empty %}
+                    				<h1 class="text-center mt-5 mb-5 text-primary">You Don't Have Courses Yet. </h1>
+							{% endfor %}
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock body %}

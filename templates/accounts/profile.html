@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load math_filter %}
+{% block body %}
+
+	<div class="top_header_banner">	
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{user.get_fullname}}</h1>
+						<ul>
+							<li><a href="{% url 'index' %}">Home</a></li>
+							<li> / {% if request.user == user %} My {% else %}Instructor's {% endif %} Profile</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>	
+	</div>
+	
+	<section class="template_agent section-padding">
+		<div class="container">
+			<div class="row">
+			  <div class="col-lg-12 col-sm-12 col-xs-12">
+					<div class="single_agent">
+						<div class="single_agent_image">
+							<img src="{{user.img.url}}" class="img-fluid" alt=""/>
+						</div>
+						<div class="single_agent_content">
+							<h4>{{user.get_fullname}}</h4>
+							<h5>{{user.job_title}}</h5>
+							<p>{{user.description}}</p>
+							<ul>
+								<li><i class="fa fa-envelope"></i><a href="mailto:{{user.email}}">{{user.email}}</a></li>
+								<li><i class="fa fa-phone"></i><a href="tel:+{{user.phone}}">{{user.phone}}</a></li>
+								{% if user.website %}
+								<li><i class="fa-solid fa-location-dot"></i><a href="{{user.website}}">{{user.website}}</a></li>
+								{% endif %}
+							</ul>
+						</div>
+						<div class="foot_social" style='margin-top:50px'>
+							<ul class="list-inline">
+								{% if user.facebook %}
+								<li><a class="top_f_facebook" style='font-size: 23px; margin-right:20px' href="{{user.facebook}}" target='_blank'><i class="fa-brands fa-facebook"></i></a></li>
+								{% endif %}
+									
+								{% if user.twitter %}
+								<li><a class="top_f_twitter" style='font-size: 23px; margin-right:20px' href="{{user.twitter}}" target='_blank'><i class="fa-brands fa-x-twitter"></i></a></li>
+								{% endif %}
+									
+								{% if user.linkedin %}
+								<li><a class="top_f_linkedin" style='font-size: 23px' href="{{user.linkedin}}" target='_blank'><i class="fa-brands fa-linkedin-in"></i></a></li>
+								{% endif %}
+									
+								{% if user.youtube %}
+								<li><a class="top_f_youtube" style='font-size: 23px' href="{{user.youtube}}" target='_blank'><i class="fa-brands fa-youtube"></i></a></li>
+								{% endif %}
+									
+							</ul>
+						</div>
+					</div><!--- END SINGLE ITEM -->		
+			  </div><!--- END COL -->				  
+			</div><!--- END ROW -->
+		</div><!--- END CONTAINER -->		
+	</section>
+
+	
+	{% if courses %}
+		<div class="bc_bg_two section-padding">
+			<div class="container">
+				<div class="section-title">
+				<h1>Top Courses</h1>
+				</div>				
+				<div class="row">
+					{% for cour in courses %}
+						<div class="col-lg-6 col-sm-12 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+							<div class="course-slide2">
+								<div class="course-img2">
+									<img src="{{cour.img.url}}" alt="">
+									<div class="course-date2">
+										<span class="month2">${{cour.price}}</span>
+									</div>
+								</div>
+								<div class="course-content2"><a class="c_btn2" href="{% url 'course' cour.slug %}">{{cour.categories.first}}</a>
+									<h3><a href="{% url 'course' cour.slug %}">{{cour.name}}</a></h3>
+									<div class="co_list">
+										<span><i class="fa fa-calendar"></i>{{cour.lessons}} Lessons</span>
+										{% for i in cour.reviews.all %}
+											<span><i class="fa fa-star"></i>{{i.rating}}</span>
+										{% endfor %}
+										{% if cour.course_type == 'online' %}
+											<span><i class="fa fa-clock"></i>{{cour.course_hours}}h</span>
+											<span><i style='color:green' class="fa fa-dot-circle"></i>Online</span>
+										{% else %}
+											<span><i style='color:gray' class="fa fa-dot-circle"></i>Offline</span>
+										{% endif %}
+										{% if cour.course_type == 'offline' %}
+											<span><i class="fa fa-chair"></i><strong>{{cour.max_seats|minus:cour.students.all.count}} Seats Available</strong></span>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						</div><!--END COL -->			
+					{% endfor %}
+					
+					<div class="col-lg-12 text-center">
+						<div class="cc_btn">
+							<a href="{% url 'instructor-courses' user.slug %}" class="cta"><span>View All Course</span>
+							<svg width="13px" height="10px" viewBox="0 0 13 10">
+								<path d="M1,5 L11,5"></path>
+								<polyline points="8 1 12 5 8 9"></polyline>
+							</svg>
+							</a>
+						</div>
+					</div><!--END COL -->				
+				</div><!--END ROW -->		
+			</div><!--END CONTAINER -->
+		</div>
+	{% endif %}
+
+	
+	{% if blogs %}
+		<section id="blog" class="blog_area section-padding">
+			<div class="container">
+				<div class="section-title">
+					<h1>Latest Blogs</h1>
+				</div>	
+				<div class="row">		
+					{% for blog in blogs %}
+						<div class="col-lg-4 col-sm-4 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+							<div class="single_blog">
+								<img src="{{blog.img.url}}" class="img-fluid" alt="image" />
+								<div class="img_info">
+									<span>{{blog.published|date:'M d o'}} | <a href="{% url 'blog' blog.slug %}">{{blog.tags.last}}</a></span>
+								</div>
+								<div class="content_box">
+									<h2><a href="{% url 'blog' blog.slug %}">{{blog.title}}</a></h2>
+									<a href="{% url 'blog' blog.slug %}" class="cta"><span>Read More</span>
+									<svg width="13px" height="10px" viewBox="0 0 13 10">
+										<path d="M1,5 L11,5"></path>
+										<polyline points="8 1 12 5 8 9"></polyline>
+									</svg>
+									</a>								
+								</div>
+							</div>
+						</div><!-- END COL-->				
+					{% endfor %}
+									
+					<div class="col-lg-12 text-center">
+						<div class="cc_btn">
+							<a href="{% url 'author-blogs' user.slug %}" class="cta"><span>View All Blogs</span>
+							<svg width="13px" height="10px" viewBox="0 0 13 10">
+								<path d="M1,5 L11,5"></path>
+								<polyline points="8 1 12 5 8 9"></polyline>
+							</svg>
+							</a>
+						</div>
+					</div><!--END COL -->	
+				</div><!-- / END ROW -->
+			</div><!-- END CONTAINER  -->
+		</section>	
+	{% endif %}
+
+	
+	{% if events %}
+		<section class="our-event section-padding">
+			<div class="container">	
+				<div class="section-title">
+					<h1>Latest Events</h1>
+				</div>			
+				<div class="row">	
+					{% for event in events %}
+						<div class="col-lg-4 col-sm-6 col-xs-12">
+							<div class="event-slide">
+								<div class="event-img">
+									<img src="{{event.img.url}}" alt="">
+									<div class="event-date">
+										<span class="date">{{event.starts_on|date:'d'}}</span>
+										<span class="month">{{event.starts_on|date:'M'}}</span>
+									</div>
+								</div>
+								<div class="event-content">
+									<h3><a href="{% url 'event' event.slug %}">{{event.name}}</a></h3>
+									<span><i class="fa fa-clock-o"></i>{{event.starts_at}} - {{event.ends_at}}</span>
+									<span><i class="fa fa-location-dot"></i><strong>{{event.location}}</strong></span>
+									<p>{{event.overview|truncatewords:30}}</p>
+								</div>
+							</div><!-- END EVENT -->
+						</div><!-- END COL -->		
+					{% endfor %}
+					<div class="col-lg-12 text-center">
+						<div class="cc_btn">
+							<a href="{% url 'speaker-events' user.slug %}" class="cta"><span>View All Events</span>
+							<svg width="13px" height="10px" viewBox="0 0 13 10">
+								<path d="M1,5 L11,5"></path>
+								<polyline points="8 1 12 5 8 9"></polyline>
+							</svg>
+							</a>
+						</div>
+					</div><!--END COL -->
+				</div><!-- END ROW -->
+			</div><!-- END CONTAINER -->			
+		</section>
+	{% endif %}
+
+{% endblock body %}

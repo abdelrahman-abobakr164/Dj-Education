@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load math_filter %}
+
+{% block body %}
+	<div class="top_header_banner">	
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{user.get_fullname}}'s Courses</h1>
+						<ul>
+							<li><a href="{% url 'profile' user.slug %}">Profile</a></li>
+							<li> / Courses</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+	</div><!-- END  TOP HEADER CLASS -->
+
+	<!--START COURSE -->
+	<div class="bc_bg_two section-padding">
+		<div class="container">
+			
+			<div class="row">
+				{% for cour in courses %}
+					<div class="col-lg-6 col-sm-12 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+						<div class="course-slide2">
+							<div class="course-img2">
+								<img src="{{cour.img.url}}" alt="">
+								<div class="course-date2">
+									<span class="month2">${{cour.price}}</span>
+								</div>
+							</div>
+							<div class="course-content2"><a class="c_btn2" href="{% url 'course' cour.slug %}">{{cour.categories.first}}</a>
+								<h3><a href="{% url 'course' cour.slug %}">{{cour.name}}</a></h3>
+								<div class="co_list">
+									<span><i class="fa fa-calendar"></i>{{cour.lessons}} Lessons</span>
+									{% for i in cour.reviews.all %}
+										<span><i class="fa fa-star"></i>{{i.rating}}</span>
+									{% endfor %}
+									{% if cour.course_type == 'online' %}
+										<span><i class="fa fa-clock"></i>{{cour.course_hours}}h</span>
+										<span><i style='color:green' class="fa fa-dot-circle"></i>Online</span>
+									{% else %}
+										<span><i style='color:gray' class="fa fa-dot-circle"></i>Offline</span>
+									{% endif %}
+									{% if cour.course_type == 'offline' %}
+										<span><i class="fa fa-chair"></i><strong>{{cour.max_seats|minus:cour.students.all.count}} Seats Available</strong></span>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div><!--END COL -->			
+				{% endfor %}
+			</div><!--END ROW -->		
+		</div><!--END CONTAINER -->
+	</div>
+	<!--END COURSE -->
+{% endblock body %}

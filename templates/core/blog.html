@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+	<div class="top_header_banner">	
+		<!-- START SECTION TOP -->
+		<section class="section-top">
+			<div class="container">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="section-top-title wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
+						<h1>{{blog.title}}</h1>
+						<ul>
+							<li><a href="{% url 'index' %}">Home</a></li>
+							<li> / {{blog.title|truncatewords:3}}</li>
+						</ul>
+					</div><!-- //.HERO-TEXT -->
+				</div><!--- END COL -->
+			</div><!--- END CONTAINER -->
+		</section>	
+		<!-- END SECTION TOP -->
+		</div><!-- END  TOP HEADER CLASS -->
+		
+	<!-- START BLOG -->
+	<section class="blog-page section-padding">
+		<div class="container">	
+			<div class="row">
+				<div class="col-lg-7 col-sm-12 col-xs-12">
+					<div class="arti_single">
+						<div class="arti_img_two">
+							<img src="{{blog.img.url}}" class="img-fluid" alt="Blog image" />
+                    		<div class="home_lc">
+								{% if request.user.is_authenticated and request.user in blog.saves.all %}
+									<a href="{% url 'save-unsave' blog.slug blog.id %}" title='Save' class="hlc">
+										<span><i class="fa fa-bookmark"></i></span>
+									</a>
+								{% else %}
+									<a href="{% url 'save-unsave' blog.slug blog.id %}" title='UnSave' class="hlc">
+										<span><i class="fa-regular fa-bookmark"></i></span>
+									</a>
+								{% endif %}
+								
+								{% if request.user.is_authenticated and request.user in blog.loves.all %}
+									<a href="{% url 'love-unlove' blog.slug blog.id %}" title='Love' class="hlc">
+										<span><i class="fa fa-heart"></i></span>
+									</a>
+								{% else %}
+									<a href="{% url 'love-unlove' blog.slug blog.id %}" title='UnLove' class="hlc">
+										<span><i class="fa-regular fa-heart"></i></span>
+									</a>
+								{% endif %}
+							</div>
+						</div>
+						<br>
+						<div class="arti_content ">
+							<p>{{blog.content}}</p>
+						</div>
+						<div class="share_sp">
+							<h4>Share</h4>
+							<ul>
+								<li><a href="#"><span class="ti-facebook"></span> Facebook</a></li>
+								<li><a href="#"><span class="ti-twitter"></span> Twitter</a></li>
+								<li><a href="#"><span class="ti-linkedin"></span> Linkedin</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="author_part">
+						<h3 class="blog_head_title">About the author</h3>
+						<div class="single_author">
+							<img src="{{blog.author.img.url}}" alt="" />
+							<h4>{{blog.author.get_fullname}}</h4>
+							 <p>{{blog.author.description}}</p> 
+						</div>
+					</div><!--- END AUTHOR PART -->
+					<div class="comments_part">
+						<h3 class="blog_head_title">Comments</h3>
+						{% for comment in comments %}
+							<div class="single_comment">
+								<img src="{{comment.user.img.url}}" alt="" />
+								<div class="d-flex">
+									<h4>{{comment.user.get_fullname}}</h4>
+									<p style='margin-left:200px; margin-bottom:40px'>{{comment.created_at|date:'d M o'}} </p>
+
+								</div>
+								<p>{{ comment.content }}</p>
+							</div><!--- END SINGLE COMMENT -->
+						{% endfor %}
+
+					</div><!--- END COMMENTS PART -->
+					<div class="comment_form">
+						<h3 class="blog_head_title">Add a Comment</h3>
+						<div class="contact comment-box">
+							<form id="contact-form" action="{% url 'comment' blog.slug blog.id %}" method="POST">
+								{% csrf_token %}
+								<div class="row">
+									<div class="form-group col-md-12">
+										<textarea rows="6" name="content" required class="form-control" id="description" placeholder="Your Message"></textarea>
+									</div>
+									<div class="col-md-12">
+										<div class="actions">
+											<button type="submit" class="cta"><span>Submit Comment</span>
+											  <svg width="13px" height="10px" viewBox="0 0 13 10">
+												<path d="M1,5 L11,5"></path>
+												<polyline points="8 1 12 5 8 9"></polyline>
+											  </svg>
+											</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div><!--- END COMMENT FORM -->						
+				</div><!-- END COL-->	
+				<div class="col-lg-5 col-sm-12 col-xs-12">
+					<div class="sidebar-post">
+						<div class="sidebar_title"><h4>Popular post</h4></div>
+						{% for popblog in popular_blogs %}
+							<div class="single_popular">
+								<a href="{% url 'blog' popblog.slug %}"><img src="{{popblog.img.url}}" alt="" /></a>
+								<h5><a href="{% url 'blog' popblog.slug %}">{{popblog.title}}</a></h5>
+							</div>
+						{% endfor %}
+					</div>	
+
+					{% if blog.author.facebook or blog.author.linkedin or blog.author.twitter or blog.author.youtube %}
+						<div class="sidebar-post">
+							<div class="sidebar_title"><h4>Follow Me</h4></div>
+							<div class="single_social">
+								<ul>
+									{% if user.youtube %}
+									<li><div class="social_item b_youtube"><a href="{{blog.author.youtube}}" target='_blank' title="youtube"><i class="ti-youtube"></i><span class="item-list">youtube</span></a></div></li>
+									{% endif %}
+									{% if user.linkedin %}
+									<li><div class="social_item b_linkedin"><a href="{{blog.author.linkedin}}" target='_blank' title="linkedin"><i class="ti-linkedin"></i><span class="item-list">linkedin</span></a></div></li>
+									{% endif %}
+									{% if user.twitter %}
+									<li><div class="social_item b_twitter"><a href="{{blog.author.twitter}}" target='_blank' title="twitter"><i class="ti-twitter"></i><span class="item-list">twitter</span></a></div></li>
+									{% endif %}
+									{% if user.facebook %}
+									<li><div class="social_item b_facebook"><a href="{{blog.author.facebook}}" target='_blank' title="facebook"><i class="ti-facebook"></i><span class="item-list">facebook</span></a></div></li>
+									{% endif %}
+								</ul>
+							</div><!-- END SOCIAL MEDIA POST -->
+						</div>		
+					{% endif %}
+
+					<div class="sidebar-post">
+						<div class="tag">
+							<div class="sidebar_title"><h4>Tags</h4></div>
+							{% for cat in blog.tags.all %}
+								<a href="{% url 'category_slug' cat.slug %}">{{cat.name}}</a>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock body %}

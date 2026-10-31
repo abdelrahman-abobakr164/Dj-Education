@@ -1,0 +1,52 @@
+{% load static %}
+<div class="footer section-padding">
+    <div class="container">				
+        <div class="row">						
+            <div class="col-lg-3 col-sm-6 col-xs-12">
+                <div class="single_footer">
+                    <a href="index.html"><img src="{% static 'assets/images/all-img/logo.png' %}" alt=""></a>         
+                </div>
+                <div class="foot_social">
+                    <ul>
+                        <li><a href="#" class="top_f_facebook"><i class="fa-brands fa-facebook"></i></a></li>
+                        <li><a href="#" class="top_f_twitter"><i class="fa-brands fa-x-twitter"></i></a></li>
+                        <li><a href="#" class="top_f_linkedin"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                    </ul>						
+                </div>					
+            </div><!--- END COL -->						
+            <div class="col-lg-4 col-sm-6 col-xs-12">
+                <div class="single_footer">
+                    <h4>Courses</h4>
+                    <ul>
+                    {% for cat in categories %}
+                        <li><a href="{% url 'category_slug' cat.slug %}">{{cat.name}}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div><!--- END COL -->	
+            <div class="col-lg-5 col-sm-6 col-xs-12">
+                <div class="single_footer">
+                    <h4>Contact Info</h4>
+                    <div class="sf_contact">
+                        <span class="ti-mobile"></span>
+                        <h3>Phone number</h3>
+                        <p>01096663306</p>
+                    </div>
+                    <div class="sf_contact">
+                        <span class="ti-email"></span>
+                        <h3>Email Address</h3>
+                        <p>abdelrahmanforlearn@gmail.com</p>
+                    </div>
+                </div>
+            </div><!--- END COL -->	
+        </div><!--- END ROW -->		
+        <div class="row fc">
+            <div class="col-lg-6 col-sm-6 col-xs-12">
+                <div class="footer_copyright">
+                    <p>&copy; 2025. All Rights Reserved by <a href="https://bestwpware.com/" class="text-dark" target="_blank">bestwpware</a> • Distributed by <a href="https://themewagon.com" class="text-dark" target="_blank">ThemeWagon</a> </p>
+                </div>
+            </div>
+
+        </div>				
+    </div><!--- END CONTAINER -->
+</div>
