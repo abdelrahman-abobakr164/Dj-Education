@@ -1,10 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.db.models import Q, Count
 from django.contrib import messages
 from django.db import transaction
+
+from .forms import CommentForm
 from .models import *
 
 User = get_user_model()
@@ -17,7 +20,7 @@ def index(request):
         .prefetch_related("categories", "students")[:6]
     )
 
-    blogs = Blog.objects.all().prefetch_related("tags")[:6]
+    blogs = Blog.objects.prefetch_related("tags")[:6]
     events = Event.objects.all()[:6]
 
     return render(
@@ -72,11 +75,11 @@ def course(request, slug):
     reviews = Review.objects.filter(course=course).select_related("user", "course")
     related_courses = (
         Course.objects.filter(categories__in=course.categories.all())
-        .prefetch_related("reviews")
+        .prefetch_related("reviews", "students")
         .exclude(slug=slug)[:3]
     )
     available_seats = (
-        course.max_seats - course.students.all().count()
+        course.max_seats - course.students.count()
         if course.course_type == "offline"
         else None
     )
@@ -138,13 +141,13 @@ def event(request, slug):
 
 
 def blogs(request):
-    blogs = Blog.objects.all().prefetch_related("tags")
+    blogs = Blog.objects.prefetch_related("tags")
     return render(request, "core/blogs.html", {"blogs": blogs})
 
 
 def blog(request, slug):
     blog = (
-        Blog.objects.prefetch_related("tags", "loves", "saves", "comments")
+        Blog.objects.prefetch_related("tags", "loves", "saves")
         .select_related("author")
         .get(slug=slug)
     )
@@ -152,7 +155,7 @@ def blog(request, slug):
     popular_blogs = (
         Blog.objects.annotate(loved_filter=Count("loves"))
         .order_by("-loved_filter")
-        .exclude(slug=slug)
+        .exclude(id=blog.id)
     )
 
     context = {"comments": comments, "blog": blog, "popular_blogs": popular_blogs}
@@ -184,18 +187,21 @@ def love_unlove(request, slug, blog_id):
 
 
 @login_required
+@require_POST
 def comment(request, slug, blog_id):
-    blog = Blog.objects.get(slug=slug, id=blog_id)
-    if request.method == "POST":
-        content = request.POST["content"]
-        try:
-            Comment.objects.create(user=request.user, blog=blog, content=content)
-            messages.success(request, "Your Comment has been Submitted Successfully!")
-            return redirect("blog", blog.slug)
+    blog = get_object_or_404(Blog, slug=slug, id=blog_id)
+    form = CommentForm(request.POST)
 
-        except:
-            messages.error(request, "something Went Wrong, Please Try again")
-            return redirect("blog", blog.slug)
+    if not form.is_valid():
+        messages.error(request, "Please write a valid comment and try again.")
+        return redirect("blog", blog.slug)
+
+    new_comment = form.save(commit=False)
+    new_comment.user = request.user
+    new_comment.blog = blog
+    new_comment.save()
+    
+    messages.success(request, "Your Comment has been Submitted Successfully!")
     return redirect("blog", blog.slug)
 
 
